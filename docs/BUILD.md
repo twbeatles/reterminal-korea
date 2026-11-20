@@ -41,8 +41,8 @@ Clean rebuild·실기 동작·실 API 통신 결과는 아니다.
   tools/generate_preview.py의 예전 ASCII 프리뷰는 실제 한글 렌더 검증의 대체가 아니다.
   이번 감사 후속 프리뷰 14종은 아래 명령으로 별도 증거 폴더에 생성한다.
   python tools/render_previews.py --output-dir evidence/audit-followup/previews
-  .github/workflows/host-tests.yml은 세 OS matrix이며 외부 runner 실행 여부는 별도 기록한다.
-- CI는 scripts/ci_local.ps1, scripts/ci_local.sh, bitbucket-pipelines.yml에 있다.
+  GitHub Actions 워크플로는 제거했다(원격 CI 불필요).
+- 로컬 검증은 scripts/ci_local.ps1, scripts/ci_local.sh로 수행한다. bitbucket-pipelines.yml도 남아 있다.
   플랫폼/컴파일러 다운로드가 실패하면 환경 장애로 기록하며, 실기 검증으로 승격하지 않는다.
 
 ## 본인 키의 개발 빌드
