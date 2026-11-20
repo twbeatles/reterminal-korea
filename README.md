@@ -195,6 +195,7 @@ python tools/check_public_repo.py                  # 공개 전 비밀/금지 �
 - **처음 설치해 보기:** [첫 플래싱 가이드](docs/14_FIRST_FLASH_GUIDE.md) · [빌드·테스트 가이드](docs/BUILD.md) · [복구 가이드](docs/RECOVERY.md)
 - **운영·보안·공개 준비:** [기기 운용 절차](docs/18_DEVICE_OPERATIONS_RUNBOOK.md) · [공개 저장소 및 개인 설정 분리](docs/20_PUBLIC_REPOSITORY_GUIDE.md) · [보안 위협 모델](docs/11_SECURITY_THREAT_MODEL.md)
 - **설계와 결정 이력:** [커버리지와 갭](docs/12_COVERAGE_AND_GAPS.md) · [기기 문서 재조사](docs/21_DEVICE_DOCUMENT_AUDIT_2026-11-16.md) · [출처와 미확인 질문](docs/10_SOURCES_AND_OPEN_QUESTIONS.md) · [ADR 목록](docs/adr/)
+- **라이선스:** 이 프로젝트의 소스 코드는 [MIT License](LICENSE)입니다. 번들된 글꼴·아이콘과 외부 데이터 출처는 아래 고지를 따릅니다.
 - **라이선스 고지:** [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) (글꼴 IBM Plex Sans KR OFL-1.1, 아이콘 Material Symbols Apache-2.0)
 
 ---
