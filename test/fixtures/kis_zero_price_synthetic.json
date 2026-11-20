@@ -1,0 +1,1 @@
+{"output": {"iscd_stat_cls_code": "", "stck_prpr": "0", "prdy_vrss": "0", "prdy_vrss_sign": "3", "prdy_ctrt": "0.00", "acml_vol": "0"}, "rt_cd": "0", "msg_cd": "MCA00000", "msg1": "SYNTHETIC: unknown symbol modeled as zero price (audit ISSUE-009)"}

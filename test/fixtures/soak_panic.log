@@ -1,0 +1,4 @@
+kdash boot fw=0.3.0 board=e1001 reset=1 heap=185200 psram=2011000 (no secrets logged)
+fetch: provider=1 outcome=OK http=200 requests=1
+Guru Meditation Error: Core 0 panic'ed (LoadProhibited). Exception was unhandled.
+fetch: provider=1 outcome=OK http=200 requests=1

@@ -1,0 +1,8 @@
+# reterminal Ruff 단계적 도입 — S1_BASE
+# vendor-upstream/ 은 gitignore로 범위 밖. E402 1건은 stdlib 상단 이동.
+line-length = 88
+preview = false
+
+[lint]
+select = ["E4", "E7", "E9", "F", "I"]
+fixable = []

@@ -1,0 +1,1 @@
+{"fixture_kind":"DEMO synthetic complete year, not live calendar evidence","response":{"header":{"resultCode":"00"},"body":{"pageNo":1,"numOfRows":128,"totalCount":2,"items":{"item":[{"locdate":20260217,"isHoliday":"Y","dateName":"DEMO 휴일"},{"locdate":"20260218","isHoliday":"Y","dateName":"DEMO 휴일"}]}}}}

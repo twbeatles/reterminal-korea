@@ -1,0 +1,129 @@
+# Secrets — never commit real credentials, tokens, keys, or raw captures.
+secrets.*
+include/dev_credentials.h
+include/kdash_private_credentials.h
+kdash_private_credentials.h
+/private/
+/secrets/
+*.key
+*.pem
+*.p12
+*.pfx
+.env
+.env.*
+**/*secret*.json
+!test/fixtures/*.json
+!host/tests/fixtures/*.json
+
+# Raw captures that may contain keys / PII (T01: probe raw/ never committed)
+evidence/**/raw/
+evidence/**/uart-raw*.log
+evidence/**/http-raw*.log
+evidence/**/http-raw*.bin
+evidence/**/active/
+
+# Keep reviewed Markdown reports; captures, measurements and generated previews
+# are local evidence. Never remove local files just to prepare a Git commit.
+/evidence/**
+!/evidence/**/
+!/evidence/**/*.md
+/evidence/**/raw/
+/evidence/**/active/
+
+# Scratch image exports. Curated README screenshots in docs/images stay tracked.
+/images/
+/IMAGE/
+/screenshots/
+/tmp/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Upstream read-only reference (P0-02) — never committed
+vendor-upstream/
+
+# Build outputs
+.pio/
+.pioenvs/
+.piolibdeps/
+build/
+dist/
+firmware-*.bin
+*.elf
+*.map
+__pycache__/
+.pytest_cache/
+*.pyc
+host/preview_out/
+evidence/*/host-preview/*.png
+evidence/*/host-preview/*.pbm
+evidence/*/host-preview/*.pgm
+
+# Local code index (CodeGraph DB, logs, pids)
+.codegraph/
+
+# Local AI-agent / assistant state and notes (may hold paths, prompts, tokens)
+.claude/
+.superpowers/
+.cursor/
+.aider*
+.codex/
+.gemini/
+CLAUDE.md
+CLAUDE.local.md
+credentials-notes*.md
+*-notes.local.md
+
+# Personal credential / key material beyond the patterns above
+*.keystore
+*.jks
+*.crt.local
+*.token
+id_rsa*
+id_ed25519*
+.netrc
+.npmrc
+.pypirc
+.aws/
+.ssh/
+*.sqlite
+*.sqlite3
+*.db
+
+# Logs, device dumps and flash images (UART logs may carry Wi-Fi/IPs/keys).
+# Reviewed synthetic fixtures under test/ stay tracked.
+*.log
+*.jsonl
+*.bin
+*.hex
+*.uf2
+*.pcap
+*.pcapng
+*.dump
+*.core
+!test/fixtures/*.log
+!test/fixtures/*.json
+!host/tests/fixtures/*.json
+
+# Local virtualenvs, caches, editor swap/backup files
+.venv/
+venv/
+env/
+node_modules/
+.mypy_cache/
+*.egg-info/
+*.swp
+*.swo
+*~
+*.bak
+*.orig
+*.rej
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.code-workspace

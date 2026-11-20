@@ -1,0 +1,31 @@
+image: python:3.12
+
+pipelines:
+  default:
+    - step:
+        name: host-tests-preview-scan
+        script:
+          - pip install pytest pillow
+          - python -m pytest host/tests -q
+          - python tools/mutation_check.py
+          - python tools/soak_report.py test/fixtures/soak_ok.log
+          - python tools/generate_preview.py
+          - echo '{"serviceKey":"FAKE-KEY-1234","a":1}' | python tools/fixture_sanitizer.py > /dev/null
+    - step:
+        # Same portable test entrypoint on Windows/Unix; test_stage2.cpp is
+        # included by test_core.cpp, not a separate translation unit.
+        name: native-cpp-tests
+        caches:
+          - pip
+        script:
+          - pip install platformio
+          - pio pkg install -e host_native
+          - python tools/run_native_tests.py
+    - step:
+        name: firmware-build
+        caches:
+          - pip
+        script:
+          - pip install platformio
+          - pio run -e reterminal_e1001
+        # Live API probes stay opt-in (need keys; never stored in CI logs).

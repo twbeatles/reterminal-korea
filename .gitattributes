@@ -1,0 +1,3 @@
+# Generated bitmap tables must compare byte-for-byte on Windows and Unix.
+src/ui/fonts/*.h text eol=lf
+src/ui/icons/*.h text eol=lf

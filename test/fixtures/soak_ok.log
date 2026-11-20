@@ -1,0 +1,10 @@
+kdash boot fw=0.3.0 board=e1001 reset=1 heap=185200 psram=2011000 (no secrets logged)
+fetch: provider=1 outcome=OK http=200 requests=1
+fetch: provider=2 outcome=OK http=200 requests=1
+fetch: provider=3 outcome=OK http=200 requests=1
+fetch: provider=4 outcome=OK http=200 requests=1
+fetch: provider=1 outcome=NO_DATA http=200 requests=2
+fetch: provider=3 outcome=STALE http=500 requests=1
+kdash boot fw=0.3.0 board=e1001 reset=3 heap=184900 psram=2011000 (no secrets logged)
+fetch: provider=1 outcome=OK http=200 requests=1
+fetch: provider=5 outcome=OK http=200 requests=3

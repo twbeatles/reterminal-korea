@@ -1,0 +1,23 @@
+{
+  "created": "2026-11-01",
+  "files": [
+    "AGENTS.md",
+    "README.md",
+    "docs/00_SCOPE_AND_DECISIONS.md",
+    "docs/01_HARDWARE_BOOTSTRAP.md",
+    "docs/02_ARCHITECTURE_CONTRACTS.md",
+    "docs/03_KOREAN_DATA_PROVIDERS.md",
+    "docs/04_NETWORK_SECURITY_CONFIG.md",
+    "docs/05_KOREAN_EINK_UI.md",
+    "docs/06_POWER_TIME_SCHEDULER.md",
+    "docs/07_QA_TEST_MATRIX.md",
+    "docs/08_RELEASE_RECOVERY_CI.md",
+    "docs/09_PHASED_EXECUTION.md",
+    "docs/10_SOURCES_AND_OPEN_QUESTIONS.md",
+    "prompts/00_MASTER_PROMPT.md",
+    "prompts/01_NEXT_PHASE_PROMPT.md",
+    "templates/API_PROBE_RECORD.md",
+    "templates/PROGRESS_REPORT.md"
+  ],
+  "count": 17
+}
