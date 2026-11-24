@@ -62,8 +62,9 @@
 - API 데이터가 달라지지 않으면 화소 갱신하지 않는다.
 - `refresh_region(rect)`은 패널·라이브러리의 영역 정렬과 지원 여부를 실기 검사한 뒤 적용. **Gray4 모드에서 partial 지원을 무조건 가정하지 말 것**.
 - partial-refresh 허용 시 좁은 숫자 영역만 갱신, 5회 누적 뒤 full-refresh(`kMaxPartialsBeforeFull`, Good Display GDEY075T7 권장, ADR 0032). 모드마다 ghosting 기록.
+- 빠른 화면 전환(설정 `fast_refresh`, 기본 꺼짐, [ADR 0034](adr/0034-fast-differential-refresh.md)): USB 전원에서 직전 프레임이 PSRAM에 있을 때만 흑백 전체 창 차분 갱신(OTP 빠른 부분 파형)을 쓰고, 5회 뒤 4계조 전체 갱신을 한다. 배터리 deep sleep 복귀, 포털 화면 뒤, 실패 뒤에는 Full. 실기 잔상 검증 전(BLOCKED_HW).
 - 동작온도: 기기 0–40°C(Seeed), 패널 0–50°C(Good Display). 범위 밖이면 UART 경고만 남기고 갱신은 계속한다. OTP 파형은 공식과 같이 온도값을 고정 주입하므로 저온 화질은 실기 확인 전(BLOCKED_HW)이다.
-- 버튼 전환은 full refresh 허용. 감지 못 한 버튼으로 수면이 풀릴 때 중복 화면 갱신하지 않음.
+- 버튼 전환은 full refresh 허용(빠른 화면 전환이 켜져 있으면 위 규칙을 따름). 감지 못 한 버튼으로 수면이 풀릴 때 중복 화면 갱신하지 않음.
 - 수집완료 vs 전자잉크 갱신완료를 분리. `last_rendered_at`는 패널 갱신 성공한 경우만 업데이트.
 
 ## Host Preview / 골든 이미지

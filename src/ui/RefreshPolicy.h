@@ -30,6 +30,12 @@ struct RefreshCaps {
   bool gray_mode = false;
 };
 
+// 빠른 차분 갱신(ADR 0034, 흑백 전체 창)을 쓸 수 있는지.
+// 세 조건이 모두 맞을 때만: 사용자가 켬, 패널이 OTP 파형(빠른 부분 파형 내장),
+// 직전 프레임이 RAM에 남아 있음(USB로 깨어 있을 때. 배터리 deep sleep은 PSRAM 소실).
+// 빠른 프레임은 흑백이므로 gray_mode=false. N회(kMaxPartialsBeforeFull) 뒤 4계조 Full.
+RefreshCaps FastRefreshCaps(bool enabled, bool otp_waveform, bool has_previous_frame);
+
 RefreshDecision DecideRefresh(bool content_changed, bool region_aligned,
                               int partials_since_full, RefreshCaps caps);
 

@@ -14,6 +14,13 @@ RefreshDecision DecideRefresh(bool content_changed, bool region_aligned,
   return RefreshDecision::Partial;
 }
 
+RefreshCaps FastRefreshCaps(bool enabled, bool otp_waveform, bool has_previous_frame) {
+  RefreshCaps c;
+  c.partial_supported = enabled && otp_waveform && has_previous_frame;
+  c.gray_mode = false;
+  return c;
+}
+
 bool ShouldPresent(bool force, bool has_render, bool content_changed,
                    bool anything_changed, uint32_t ms_since_refresh) {
   if (force || !has_render || content_changed) return true;

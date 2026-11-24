@@ -9,7 +9,8 @@
 
 namespace kdash {
 
-inline constexpr int kSettingsSchemaVersion = 4;  // v4: +charge_protect
+inline constexpr int kSettingsSchemaVersion = 5;  // v5: +fast_refresh (ADR 0034)
+inline constexpr int kSettingsSchemaVersionV4 = 4;  // v4: +charge_protect
 inline constexpr int kSettingsSchemaVersionV3 = 3;
 inline constexpr int kSettingsSchemaVersionV2 = 2;  // 읽기 전용 이전 경로(Migrate)
 inline constexpr int kCacheSchemaVersion = 1;
@@ -83,6 +84,8 @@ struct DeviceConfig {
   int market_from_hour = 9;   // 0..23
   int market_to_hour = 16;    // 1..24, from보다 커야 함
   int refresh_scale_pct = kDefaultRefreshScalePct;  // 에어코리아·환율·KIS 주기 배율(%)
+  // 빠른 화면 전환(흑백 차분 갱신, N회 뒤 4계조 전체 갱신). 실기 잔상 검증 전이라 기본 꺼짐(ADR 0034).
+  bool fast_refresh = false;
 };
 
 struct ScheduleConfig {

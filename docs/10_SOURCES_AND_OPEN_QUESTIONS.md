@@ -27,6 +27,10 @@
 - Silergy SY6974B Rev.0.9의 CHG_CONFIG·전압 설정·watchdog 만료 시 default mode 복귀를 원문 확인했다. **사용자 실물 리비전·칩 ID·80% SOC 교정·충전 차단 전류는 BLOCKED_HW**. 이 확인으로 충전 제한 구현/실기 검증을 완료 처리하지 않는다.
 - 고정 공식 LVGLePaperStatusPanel의 board/qio_opi/PSRAM/해상도 설정을 다시 대조했다. 현재 파티션과 설정을 유지한다. 기존 API 출처/약관은 이번 전원 감사에서 재검증하지 않았다.
 
+## 2026-11-24 빠른 차분 갱신 출처 (확인일 2026-11-24)
+
+- GDEY075T7 드라이버: GxEPD2 master [`src/gdey/GxEPD2_750_GDEY075T7.h`](https://github.com/ZinggJM/GxEPD2/blob/master/src/gdey/GxEPD2_750_GDEY075T7.h) / [`.cpp`](https://github.com/ZinggJM/GxEPD2/blob/master/src/gdey/GxEPD2_750_GDEY075T7.cpp). 공식 E1001 예제(`GxEPD2_reTerminal_E1001.ino`)가 이 클래스를 쓴다. ADR 0018 당시 404였던 경로는 `src/gdey/` 아래에 있었다. 원문 값: `hasFastPartialUpdate=true`, `useFastPartialUpdateFromOTP=true`(초기 배치 패널은 false), `partial_refresh_time=450`, `full_refresh_time=1200`, `_Init_Part` OTP fast = 0xE0 02 / 0xE5 6E. N회 권장과 잔상 언급은 없다. 커밋 해시는 기록하지 못했다. GPL-3.0이라 레지스터 값만 참고했다. 결정: [ADR 0034](adr/0034-fast-differential-refresh.md).
+
 ## 2026-11-12 LAN 설정 포털 설계 출처 (확인일 2026-11-12, 검색 요약 기준 — 원문 정독은 구현 시)
 
 - Arduino-ESP32 STA 모드 HTTP 서버: [Espressif Arduino Wi-Fi API](https://docs.espressif.com/projects/arduino-esp32/en/latest/api/wifi.html). `ESPmDNS` API 원문은 이번에 직접 열지 못했다 — 구현 전 설치된 코어 3.3.12 헤더로 확인.
@@ -86,7 +90,7 @@
 |---|---|---|---|
 | U-01 | E1001 정식 예제 LVGL vs GxEPD2 빌드·Heap 비용 | 원본 소스 + 실빌드 + 계측 | P0 필수 |
 | U-02 | 현재 E1001 핀맵/RTC·BTN wake 및 배터리 ADC 스케일 | 공식 base 예제 + 실기 | P0/P4 필수 |
-| U-03 | ePaper 4-level gray와 partial refresh 조합의 지원/잔상 | 실기 100회 측정 | P4 필수 |
+| U-03 | ePaper 4-level gray와 partial refresh 조합의 지원/잔상 (2026-11-24: 흑백 빠른 차분 + 4계조 Full 구현, 설정 기본 꺼짐, ADR 0034) | 실기 100회 측정 | P4 필수 |
 | U-04 | API별 키 발급·실 통신·응답 헤더/최대 크기 | 공식 가이드 + 실키 프로브 | P3 필수(인증 미보유시 BLOCKED) |
 | U-05 | 기상청 발표 스케줄의 실 제공 지연 및 KMA 격자 파일 | 2026-10 공식 첨부 가이드 | P3 필수 |
 | U-06 | AirKorea 최신 operation parameters, 관측소 선택 | 공식 문서 + 실응답 | P3 필수 |

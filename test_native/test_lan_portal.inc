@@ -65,32 +65,32 @@ void test_settings_v3_roundtrip_and_v2_migration() {
   TEST_ASSERT_EQUAL(18, back.device.market_to_hour);
   TEST_ASSERT_EQUAL(250, back.device.refresh_scale_pct);
 
-  // v2 payload == v4 payload without the 8-byte device tail and with version 2.
+  // v2 payload == v5 payload without the 9-byte device tail and with version 2.
   uint8_t v2[2048];
-  memcpy(v2, bytes, n - 8);
+  memcpy(v2, bytes, n - 9);
   v2[0] = 2; v2[1] = 0;
   Settings migrated;
-  TEST_ASSERT_TRUE(settings_codec::Decode(v2, n - 8, migrated));
+  TEST_ASSERT_TRUE(settings_codec::Decode(v2, n - 9, migrated));
   TEST_ASSERT_EQUAL_STRING(s.wifi_ssid, migrated.wifi_ssid);
   TEST_ASSERT_EQUAL_STRING(s.providers.kis_app_secret, migrated.providers.kis_app_secret);
   TEST_ASSERT_TRUE(migrated.device.auto_rotate);  // v2 has none: defaults
   TEST_ASSERT_EQUAL(kDefaultRotateMinutes, migrated.device.rotate_minutes);
   TEST_ASSERT_EQUAL(kDefaultRefreshScalePct, migrated.device.refresh_scale_pct);
-  TEST_ASSERT_TRUE(settings_codec::Migrate(2, v2, n - 8, migrated));
+  TEST_ASSERT_TRUE(settings_codec::Migrate(2, v2, n - 9, migrated));
   // A v2 header over a v3-length body, or a v3 header without the tail, is rejected.
   Settings untouched = FullSettings();
   TEST_ASSERT_FALSE(settings_codec::Decode(v2, n, untouched));
-  TEST_ASSERT_FALSE(settings_codec::Decode(bytes, n - 7, untouched));
+  TEST_ASSERT_FALSE(settings_codec::Decode(bytes, n - 8, untouched));
   // Out-of-range device values and unknown flag bits are rejected, never clamped.
   uint8_t bad[2048];
   memcpy(bad, bytes, n);
-  bad[n - 6] = 0;  // rotate_minutes = 0
+  bad[n - 7] = 0;  // rotate_minutes = 0
   TEST_ASSERT_FALSE(settings_codec::Decode(bad, n, untouched));
   memcpy(bad, bytes, n);
-  bad[n - 7] = 0x80;  // unknown flag bit
+  bad[n - 8] = 0x80;  // unknown flag bit
   TEST_ASSERT_FALSE(settings_codec::Decode(bad, n, untouched));
   memcpy(bad, bytes, n);
-  bad[n - 8] = 9;  // lan_mode
+  bad[n - 9] = 9;  // lan_mode
   TEST_ASSERT_FALSE(settings_codec::Decode(bad, n, untouched));
 }
 
@@ -466,11 +466,13 @@ void test_lan_handler_device_section_and_rotation_settings() {
   TEST_ASSERT_NOT_NULL(strstr(page.body, "value=\"5\""));
   TEST_ASSERT_NOT_NULL(strstr(page.body, "name=\"market_from\""));
   TEST_ASSERT_NOT_NULL(strstr(page.body, "value=\"16\""));
+  TEST_ASSERT_NOT_NULL(strstr(page.body, "name=fast_refresh"));
 
   FormField ok[] = {{"sec", "device"}, {"dev_present", "1"}, {"page", "1"}, {"auto_rotate", "1"},
                     {"rotate_min", "10"}, {"market_hours", "1"}, {"market_from", "9"},
-                    {"market_to", "15"}, {"refresh_pct", "200"}, {"lan_mode", "2"}};
-  TEST_ASSERT_EQUAL(200, post(ok, 10).status);
+                    {"market_to", "15"}, {"refresh_pct", "200"}, {"lan_mode", "2"},
+                    {"fast_refresh", "1"}};
+  TEST_ASSERT_EQUAL(200, post(ok, 11).status);
   TEST_ASSERT_TRUE(h.HasPendingSave());
   const DeviceConfig& d = h.Pending().device;
   TEST_ASSERT_TRUE(d.auto_rotate);
@@ -481,6 +483,7 @@ void test_lan_handler_device_section_and_rotation_settings() {
   TEST_ASSERT_EQUAL(200, d.refresh_scale_pct);
   TEST_ASSERT_EQUAL((int)LanPortalMode::Always, (int)d.lan_mode);
   TEST_ASSERT_EQUAL(1, h.Pending().display_page);
+  TEST_ASSERT_TRUE(d.fast_refresh);
   TEST_ASSERT_FALSE(h.PendingWifiChanged());
   h.CompleteSave(true);
 
@@ -491,6 +494,7 @@ void test_lan_handler_device_section_and_rotation_settings() {
   TEST_ASSERT_EQUAL(200, post(off, 8).status);
   TEST_ASSERT_FALSE(h.Pending().device.auto_rotate);
   TEST_ASSERT_FALSE(h.Pending().device.market_hours_only);
+  TEST_ASSERT_FALSE(h.Pending().device.fast_refresh);
   h.CompleteSave(true);
 
   // 범위 밖/잘못된 값은 거부하고 pending을 만들지 않는다.

@@ -76,7 +76,7 @@ T01과 T11은 자원이 생기는 즉시 끼워 넣습니다.
 | U-12 | 해결: VBUS GPIO 없음. PMIC SY6974(REG0A bit7, 0x6B/Wire1)으로 판정 — `src/drivers/Pmic.*` 구현됨. T11 실기 대조만 남음 | 공식 SenseCraft PMIC 코드 @8d97d891 | T05 |
 | U-13 | 해결: GPL-3.0 확인됨. 자체 UC8179 우선으로 채택 (ADR 0004) | ZinggJM/GxEPD2 LICENSE | T04 |
 | U-14 | 해결(소스상): 공식 RTC 드라이버는 알람 미사용, E1001 설정에 INT 핀 없음 → 타이머 wake만. T11 실기 재확인 1회 | SenseCraft rtc_pcf8563 + E1001 config.h | T05 |
-| U-15 | UC8179 부분 갱신의 영역 정렬 단위·잔상 | 실기 100회 | T04d |
+| U-15 | UC8179 부분 갱신의 영역 정렬 단위·잔상 (전체 창 빠른 차분 갱신 구현, ADR 0034) | 실기 100회 | T04d |
 | U-16 | `SensirionI2cSht4x` 라이선스·버전 | 라이브러리 원문 | T08 |
 | U-17 | 해결: 공식 101점 곡선 확보 → `BatteryPolicy::PercentMv` 구현됨. T11 실측 대조만 남음 | SenseCraft E1001 config.h | T08, T11 |
 

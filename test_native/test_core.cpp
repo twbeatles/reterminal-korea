@@ -845,6 +845,7 @@ void test_fsc_due_gate(void) {
 #include "test_long_term_followup.inc"
 #include "test_audit_20261116.inc"
 #include "test_device_docs_20261116.inc"
+#include "test_fast_refresh.inc"
 
 int main(int argc, char** argv) {
   (void)argc;
@@ -1005,5 +1006,10 @@ int main(int argc, char** argv) {
   RUN_TEST(test_deferred_token_reissue_does_not_consume_cooldown);
   RUN_TEST(test_next_year_empty_calendar_retries_daily);
   RUN_TEST(test_maximum_persistent_blobs_fit_nvs_with_rewrite_reserve);
+  RUN_TEST(test_fast_frame_register_sequence_and_planes);
+  RUN_TEST(test_fast_frame_rejects_bad_input_and_timeout);
+  RUN_TEST(test_fast_refresh_caps_and_cycle);
+  RUN_TEST(test_settings_v5_fast_refresh_roundtrip_and_migration);
+  RUN_TEST(test_fast_refresh_backup_roundtrip);
   return UNITY_END();
 }

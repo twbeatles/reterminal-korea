@@ -2,6 +2,8 @@
 // @8d97d891: examples/base/GxEPD2_reTerminal_E1001_Gray4.
 // Copyright (c) 2026 Seeed-Projects; permission and warranty notice retained
 // in hardware/reference/LICENSE. No GxEPD2 library code is linked.
+// PushFastFrame register values: GxEPD2 GDEY075T7 (GPL-3.0) consulted as a
+// hardware reference only; sequence re-implemented here (ADR 0034).
 #include "Uc8179.h"
 #include <initializer_list>
 
@@ -117,6 +119,67 @@ bool PushMonoFrame(PanelPort& p, const uint8_t* fb, uint32_t timeout) {
 }
 bool PushGrayFrame(PanelPort& p, const uint8_t* fb, uint32_t timeout) {
   return PushFrame(p, fb, timeout, true);
+}
+
+bool PushFastFrame(PanelPort& p, const uint8_t* old_fb, bool old_any_ink,
+                   const uint8_t* new_fb, uint32_t timeout) {
+  if (!old_fb || !new_fb || timeout == 0) return false;
+  const uint32_t start = p.now_ms();
+  p.reset(false); p.pause_ms(10); p.reset(true); p.pause_ms(10);
+  if (!Wait(p, start, timeout)) return false;
+  p.trace("fast_reset", start);
+  // GxEPD2 GDEY075T7 _InitDisplay: panel KW/OTP LUT, power, booster, size,
+  // single SPI, CDI 0x29 (N2OCP, DDX=01 -> data 1 = white), TCON, power saving.
+  const uint8_t panel[] = {0x1F};
+  const uint8_t power[] = {0x07,0x07,0x3F,0x3F,0x09};
+  const uint8_t booster[] = {0x17,0x17,0x28,0x17};
+  const uint8_t resolution[] = {0x03,0x20,0x01,0xE0};
+  const uint8_t dual_spi[] = {0x00}, cdi[] = {0x29,0x07};
+  const uint8_t tcon[] = {0x22}, saving[] = {0x22};
+  // _Init_Part with useFastPartialUpdateFromOTP: cascade temperature 0x6E
+  // selects the OTP fast-partial waveform.
+  const uint8_t temp_mode[] = {0x02}, fast_temp[] = {0x6E};
+  Send(p,0x00,panel,sizeof(panel));
+  Send(p,0x01,power,sizeof(power));
+  Send(p,0x06,booster,sizeof(booster));
+  Send(p,0x61,resolution,sizeof(resolution));
+  Send(p,0x15,dual_spi,sizeof(dual_spi));
+  Send(p,0x50,cdi,sizeof(cdi));
+  Send(p,0x60,tcon,sizeof(tcon));
+  Send(p,0xE3,saving,sizeof(saving));
+  Send(p,0xE0,temp_mode,sizeof(temp_mode));
+  Send(p,0xE5,fast_temp,sizeof(fast_temp));
+  p.command(0x04); p.pause_ms(100);
+  if (!Wait(p,start,timeout)) return false;
+  p.trace("fast_power_on", start);
+  for (uint8_t c : {uint8_t(0x10),uint8_t(0x13)}) {
+    const uint8_t* fb = c == 0x10 ? old_fb : new_fb;
+    const uint8_t threshold = (c == 0x10 && old_any_ink) ? 1 : kFastInkThreshold;
+    p.command(c);
+    DataSession session(p);
+    uint8_t line[100];
+    for (size_t row=0;row<480;row++) {
+      if ((uint32_t)(p.now_ms()-start) >= timeout) return false;
+      for (size_t byte = 0; byte < 100; ++byte) {
+        uint8_t packed = 0;
+        for (unsigned bit = 0; bit < 8; ++bit) {
+          const size_t x = byte * 8 + bit;
+          const uint8_t ink = (fb[row * 200 + x / 4] >> (6 - 2 * (x % 4))) & 3u;
+          if (ink < threshold) packed |= (uint8_t)(0x80 >> bit);  // 1 = white
+        }
+        line[byte] = packed;
+      }
+      p.data(line, sizeof(line));
+    }
+  }
+  p.trace("fast_data", start);
+  p.command(0x12); p.pause_ms(100);
+  if (!Wait(p,start,timeout)) return false;
+  p.trace("fast_refresh_done", start);
+  // Same power-off/deep-sleep tail as full frames: panel RAM is not relied on,
+  // both planes are rewritten from the host copy on every fast frame.
+  const uint32_t elapsed = p.now_ms() - start;
+  return elapsed < timeout && SleepPanel(p, timeout - elapsed);
 }
 
 bool SleepPanel(PanelPort& p, uint32_t timeout) {

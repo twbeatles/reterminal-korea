@@ -65,6 +65,7 @@ size_t ExportBackup(const Settings& s, char* out, size_t cap) {
   dev["market_to_hour"] = s.device.market_to_hour;
   dev["refresh_scale_pct"] = s.device.refresh_scale_pct;
   dev["charge_protect"] = s.device.charge_protect;
+  dev["fast_refresh"] = s.device.fast_refresh;
   if (measureJson(doc) + 1 > cap) return 0;
   return serializeJson(doc, out, cap);
 }
@@ -158,6 +159,7 @@ ImportResult ImportBackup(const char* json, Settings& inout, char* bad_field, si
     int lan = (int)d.lan_mode;
     bool ok = dev.is<JsonObjectConst>();
     ok = ok && (dev["charge_protect"].isNull() || GetBool(dev["charge_protect"], d.charge_protect));
+    ok = ok && (dev["fast_refresh"].isNull() || GetBool(dev["fast_refresh"], d.fast_refresh));
     ok = ok && (dev["page"].isNull() || GetInt(dev["page"], 0, 3, c.display_page));
     ok = ok && (dev["lan_mode"].isNull() || GetInt(dev["lan_mode"], 0, 2, lan));
     d.lan_mode = (LanPortalMode)lan;

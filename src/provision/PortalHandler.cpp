@@ -454,6 +454,8 @@ Response PortalHandler::RenderSections(uint8_t mask, const char* title, const ch
     number("장 종료(시, 이 시각 전까지)", "market_to", d.market_to_hour, 1, 24);
     number("호출 주기 배율(%)", "refresh_pct", d.refresh_scale_pct, kRefreshScaleMin, kRefreshScaleMax);
     select("설정 포털(같은 Wi-Fi)", "lan_mode", (int)d.lan_mode, kLan, 3);
+    check("빠른 화면 전환 (실험, USB 전원일 때)", "fast_refresh", d.fast_refresh);
+    o.add("<p><small>흑백 빠른 갱신, 5번마다 전체 갱신</small></p>");
     check("배터리 보호 (추정 80% 목표)", "charge_protect", d.charge_protect);
     o.add("<p><small>80% 추정에서 충전 중단, 75%에서 재개합니다. 잔량은 전압 기반 추정이며 "
           "배터리 수면 전 충전을 허용하므로 잠든 동안 USB를 꽂으면 충전할 수 있습니다. "
@@ -785,6 +787,7 @@ Response PortalHandler::HandleSave(const Request& req) {
     d.auto_rotate = Eq(field("auto_rotate"), "1");
     d.market_hours_only = Eq(field("market_hours"), "1");
     d.charge_protect = Eq(field("charge_protect"), "1");
+    d.fast_refresh = Eq(field("fast_refresh"), "1");
     if (!ParseInt(field("rotate_min"), kRotateMinMinutes, kRotateMaxMinutes, d.rotate_minutes))
       return Render(200, "기기 설정 오류: 순환 간격(1~60분)");
     if (!ParseInt(field("market_from"), 0, 23, d.market_from_hour) ||

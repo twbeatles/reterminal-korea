@@ -2,8 +2,8 @@
 // EpdPanel: UC8179/GDEY075T7 adapter (T04d). Device-only SPI path;
 // geometry/refresh policy stays portable (RefreshPolicy + RenderStep).
 // Pin map (official GxEPD2_reTerminal_E1001): SCK=7, MOSI=9, CS=10,
-// DC=11, RST=12, BUSY=13, HSPI 2MHz MODE0. Partial caps stay false
-// until U-15 is measured on hardware.
+// DC=11, RST=12, BUSY=13, HSPI 2MHz MODE0. Fast differential refresh
+// (push_fast, ADR 0034) is opt-in and only on OTP-waveform panels.
 #include <stdint.h>
 
 #include "../../include/IDisplay.h"
@@ -39,7 +39,10 @@ class EpdPanel : public IDisplay {
   // Full/partial framebuffer push (800x480 1bpp, 48,000B, MSB first).
   bool push_full(const uint8_t* fb);
   bool push_gray(const uint8_t* fb);
-  bool push_partial(const uint8_t* fb, const Rect& r);
+  // Whole-window fast differential frame (2bpp canvases, mono on the wire).
+  bool push_fast(const uint8_t* old_fb, bool old_any_ink, const uint8_t* new_fb);
+  // True when begin() found the internal OTP waveform (fast LUT available).
+  bool fast_capable() const;
   void hibernate();
 };
 

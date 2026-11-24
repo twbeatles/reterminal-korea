@@ -95,6 +95,11 @@ bool DecodeBody(codec::Reader& r, Settings& s, uint16_t ver) {
     if (!r.u8(protect) || protect > 1) return false;
     tmp.device.charge_protect = protect != 0;
   }
+  if (ver >= 5) {
+    uint8_t fast = 0;
+    if (!r.u8(fast) || fast > 1) return false;
+    tmp.device.fast_refresh = fast != 0;
+  }
   tmp.location.grid_x = gx;
   tmp.location.grid_y = gy;
   tmp.providers.fsc_enabled = fsc != 0;
@@ -138,6 +143,7 @@ size_t Encode(const Settings& s, uint8_t* out, size_t out_cap) {
   w.u8((uint8_t)s.device.market_to_hour);
   w.u16((uint16_t)s.device.refresh_scale_pct);
   w.u8(s.device.charge_protect ? 1 : 0);
+  w.u8(s.device.fast_refresh ? 1 : 0);
   if (!w.ok()) return 0;
   return w.pos();
 }
@@ -147,9 +153,9 @@ bool Decode(const uint8_t* data, size_t len, Settings& out) {
   codec::Reader r(data, len);
   uint16_t ver = 0;
   if (!r.u16(ver)) return false;
-  // v4 is current; v2/v3 preserve credentials and migrate with protection OFF.
-  if (ver != (uint16_t)kSettingsSchemaVersion && ver != (uint16_t)kSettingsSchemaVersionV3 &&
-      ver != (uint16_t)kSettingsSchemaVersionV2)
+  // v5 is current; v2..v4 preserve credentials and migrate with new device flags OFF.
+  if (ver != (uint16_t)kSettingsSchemaVersion && ver != (uint16_t)kSettingsSchemaVersionV4 &&
+      ver != (uint16_t)kSettingsSchemaVersionV3 && ver != (uint16_t)kSettingsSchemaVersionV2)
     return false;
   // Keep failure atomic without stacking two Settings copies on loopTask.
   std::unique_ptr<Settings> tmp(new (std::nothrow) Settings);
@@ -168,10 +174,10 @@ uint32_t DataFingerprint(const Settings& s) {
   norm->display_page = 0;
   norm->schedule.refresh_scale_pct = 100;  // runtime mirror of device.refresh_scale_pct
   const size_t n = Encode(*norm, bytes.get(), 2048);
-  // Keep the existing v3 DATA identity across device-only v4 migration.
-  // The final v4 byte belongs to DeviceConfig, which is excluded here.
+  // Keep the existing v3 DATA identity across device-only v4/v5 migration.
+  // The final two bytes (charge_protect, fast_refresh) belong to DeviceConfig.
   if (n) bytes[0] = kSettingsSchemaVersionV3;
-  const uint32_t crc = n ? Crc32(bytes.get(), n - 1) : 0;
+  const uint32_t crc = n >= 2 ? Crc32(bytes.get(), n - 2) : 0;
   memset(bytes.get(), 0, 2048);
   // Settings copies hold secrets: scrub before release.
   memset(norm->wifi_secret, 0, sizeof(norm->wifi_secret));
@@ -183,8 +189,8 @@ uint32_t DataFingerprint(const Settings& s) {
 bool Migrate(int from_version, const uint8_t* data, size_t len, Settings& out) {
   // No published v1 wire contract exists in Git. Never invent one or replace
   // caller state on failure. v2/v3 add only device defaults, never invent keys.
-  if ((from_version != kSettingsSchemaVersion && from_version != kSettingsSchemaVersionV3 &&
-       from_version != kSettingsSchemaVersionV2) ||
+  if ((from_version != kSettingsSchemaVersion && from_version != kSettingsSchemaVersionV4 &&
+       from_version != kSettingsSchemaVersionV3 && from_version != kSettingsSchemaVersionV2) ||
       !data || len < 2 ||
       data[0] != (uint8_t)from_version || data[1] != (uint8_t)(from_version >> 8))
     return false;

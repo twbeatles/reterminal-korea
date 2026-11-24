@@ -113,15 +113,16 @@ void test_settings_v4_protection_migration_and_fingerprint() {
   const uint32_t fingerprint=settings_codec::DataFingerprint(s);
   s.device.charge_protect=false;
   TEST_ASSERT_EQUAL_UINT32(fingerprint,settings_codec::DataFingerprint(s));
+  // v5 appends fast_refresh after charge_protect (ADR 0034): v4 = n-1, v3 = n-2.
   data[0]=3;
-  TEST_ASSERT_TRUE(settings_codec::Decode(data,n-1,out));
+  TEST_ASSERT_TRUE(settings_codec::Decode(data,n-2,out));
   TEST_ASSERT_FALSE(out.device.charge_protect);
   TEST_ASSERT_EQUAL_UINT32(fingerprint,settings_codec::DataFingerprint(out));
   data[0]=2;
-  TEST_ASSERT_TRUE(settings_codec::Decode(data,n-8,out));
+  TEST_ASSERT_TRUE(settings_codec::Decode(data,n-9,out));
   TEST_ASSERT_FALSE(out.device.charge_protect);
-  data[0]=4; data[n-1]=2;
-  TEST_ASSERT_FALSE(settings_codec::Decode(data,n,out));
+  data[0]=4; data[n-2]=2;
+  TEST_ASSERT_FALSE(settings_codec::Decode(data,n-1,out));
 }
 
 void test_charge_labels_fit_device_font_and_backup_roundtrip() {

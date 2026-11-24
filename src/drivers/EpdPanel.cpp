@@ -144,9 +144,15 @@ bool EpdPanel::push_gray(const uint8_t* fb) {
   if (ok) awake = false;
   return ok;
 }
-bool EpdPanel::push_partial(const uint8_t*, const Rect&) {
-  return false;  // U-15: hardware validation required before enabling.
+bool EpdPanel::push_fast(const uint8_t* old_fb, bool old_any_ink, const uint8_t* new_fb) {
+  begin();
+  if (!use_otp) return false;  // fast-partial waveform lives in OTP only
+  awake = true;
+  const bool ok = PushFastFrame(port, old_fb, old_any_ink, new_fb, kBusyTimeoutMs);
+  if (ok) awake = false;
+  return ok;
 }
+bool EpdPanel::fast_capable() const { return begun && use_otp; }
 void EpdPanel::hibernate() {
   if (begun && awake) SleepPanel(port, kBusyTimeoutMs);
   awake = false;

@@ -21,6 +21,8 @@ pio run -e reterminal_e1001
 pio run -e reterminal_e1001_protected_dev
 # 사용자가 실기 적용을 요청했을 때 (이번 세션은 승인됨)
 pio run -e reterminal_e1001_protected_dev -t upload --upload-port COM5
+# 빠른 화면 전환(ADR 0034) 실기 검증용: 설정이 없는 기기에서만 켜진다
+pio run -e reterminal_e1001_fast_dev -t upload --upload-port COM5
 python tools/uart_logger.py COM5 evidence/hw/session.log --duration-sec 86400
 python tools/soak_report.py evidence/hw/session.log --events evidence/hw/session.log.events.jsonl --min-duration-sec 86400 --max-gap-sec 120
 ```

@@ -134,8 +134,12 @@ void setup() {
   // Local device opt-in only when no stored settings exist; portal/NVS wins.
   if (strcmp(boot::ConfigSource(), "dev") == 0) g_state.settings.device.charge_protect = true;
 #endif
+#ifdef KDASH_DEV_FAST_REFRESH
+  // Hardware-validation opt-in (ADR 0034), only without stored settings; portal/NVS wins.
+  if (strcmp(boot::ConfigSource(), "dev") == 0) g_state.settings.device.fast_refresh = true;
+#endif
   g_state.charge_state = pmic::MaintainCharge(g_state.settings.device.charge_protect);
-  g_state.page = (ui::Page)g_state.settings.display_page;
+  g_state.page =(ui::Page)g_state.settings.display_page;
   power::RestoreRuntime(g_nvs, g_state, g_snap, g_kis);
   KDASH_LOG.printf("config: source=%s\n", boot::ConfigSource());
   KDASH_LOG.printf("restore: kis_quotes=%d kospi=%d fx=%d\n",
