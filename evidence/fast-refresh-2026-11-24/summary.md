@@ -22,7 +22,8 @@
 | Upload | `pio run -e reterminal_e1001_protected_dev -t upload --upload-port COM14`, 이어서 `-e reterminal_e1001_fast_dev` | PASS (해시 검증, 리셋 후 부팅) | Hardware | 로컬 실행 출력 |
 | E1001 boot | UART 100초(protected_dev), 10분(fast_dev) | PASS: 재부팅 없음, `crashes=0`, `config: source=dev` | Hardware | [정제 로그](fast-refresh-redacted.txt) |
 | 빠른 갱신 동작 | fast_dev에서 UART `display:` 줄 | **PASS(로그 한정)**: `mode=fast partials=1,2` `ok=1`, 실패 0건 | Hardware | 같은 로그 |
-| 빠른 갱신 화면 품질(반전/잔상/글꼴) | 육안 | **NOT_RUN** (사용자 확인 필요) | Hardware | — |
+| 빠른 갱신 화면 극성(반전 여부) | 사용자 육안 | **PASS(사용자 보고)**: "반전 없이 잘 되고 있다"(2026-11-24). 사진·측정값은 없음 | Hardware | 아래 실기 결과 |
+| 빠른 갱신 잔상·글꼴 품질 | 육안 | **NOT_RUN** (사용자가 별도로 언급하지 않음) | Hardware | — |
 | 5회 뒤 전체 갱신 주기 | 10분 로그 | **NOT_OBSERVED** (빠른 프레임이 2번뿐) | Hardware | — |
 | Sleep/wake | — | NOT_RUN (배터리 모드 미시험) | Hardware | — |
 
@@ -32,7 +33,7 @@
 - TLS와 네트워크 변경 없음
 
 ## 미완료/블로커
-- BLOCKED_HW: 육안 확인(반전·깨짐·잔상·글꼴), 5회 주기 전체, 배터리 deep sleep 복귀
+- BLOCKED_HW: 잔상·글꼴 육안 확인, 5회 주기 전체(`fast` 5회 뒤 `full` 복귀), 배터리 deep sleep 복귀
 - 기타: 배터리 deep sleep 모드에서는 이전 프레임이 없어 항상 전체 갱신한다(설계상 제한, ADR 0034)
 
 ## 실기 결과 (2026-11-24, USB 전원)
@@ -40,15 +41,16 @@
 - 환경: 기존 `reterminal_e1001_protected_dev`로 먼저 올려 정상 부팅을 확인한 뒤, 설정 없이 켤 수 있게 새 환경 `reterminal_e1001_fast_dev`(`KDASH_DEV_FAST_REFRESH`, `config: source=dev`일 때만)를 올렸다. 이 기기는 원래 NVS 설정 없이 개인 헤더로 부팅하므로 설정 스키마 v5는 영향이 없었다(키·격자 유지).
 - 전체 갱신 `elapsed_ms=4736~4741`(종전과 같음). 빠른 갱신 `elapsed_ms=1991~1993`(리셋 30ms, 전원 켬 161ms, 데이터 전송 약 0.86s, 갱신 약 0.92s). 원문 값(450ms)보다 길다. 이 시간은 SPI 2MHz로 평면 2개(96KB)를 매번 보내는 전송 시간이 큰 비중이다.
 - 빠른 갱신 2회가 `ok=1`로 끝났고 BUSY 대기 초과나 오류는 없었다. 즉 이 패널의 OTP에 빠른 부분 파형이 있고 명령이 받아들여졌다는 것까지는 로그로 확인했다.
-- 로그로는 화면 극성이 맞는지, 잔상이 어떤지, 깨지지 않았는지 알 수 없다. 이 항목은 육안 확인 전까지 미검증이다.
+- 화면 극성: 사용자가 같은 날 기기를 보고 "반전 없이 잘 되고 있다"고 확인했다(2026-11-24, 구두 보고). 따라서 GxEPD2 관례(CDI 0x29, 1=흰색) 그대로 이 기기에서 극성이 맞고, ADR 0012의 4계조 극성 차이는 빠른 갱신 경로에는 해당하지 않았다. 사진이나 수치 기록은 없다.
+- 아직 미확인: 5회 누적 뒤 잔상 정도, 글자 가장자리(회색 없음) 품질 평가, 5회 뒤 전체 갱신으로 돌아오는 주기, 저온 화질.
 - 정제 로그: [fast-refresh-redacted.txt](fast-refresh-redacted.txt). 원본에는 시세 수치와 관심종목이 있어 커밋하지 않았다.
 
 ## 실기 확인 절차 (USB 전원)
 1. `pio run -e reterminal_e1001_fast_dev -t upload --upload-port <COM>`으로 올린다(설정이 없는 기기). 이미 포털 설정을 저장한 기기는 포털 → 기기 → "빠른 화면 전환"을 켜고 저장한다.
 2. 회색 버튼으로 화면을 6번 넘긴다. UART에서 `display: ... mode=full partials=0`이 나온 뒤 `mode=fast partials=1..5`, 다시 `mode=full partials=0`이 나오는지 본다.
-3. 육안 확인: fast 프레임에서 전체 반전 깜빡임이 없는지, 글자 반전이나 깨짐이 없는지, `elapsed_ms`(목표 1초 안팎), 5회 뒤 잔상 정도.
+3. 육안 확인: fast 프레임에서 전체 반전 깜빡임이 없는지, 글자 반전이나 깨짐이 없는지(2026-11-24 반전 없음 확인됨), `elapsed_ms`(실측 약 2초), 5회 뒤 잔상 정도(미확인).
 4. 반전되거나 아무것도 바뀌지 않으면 설정을 끄고 로그를 첨부한다(ADR 0034 위험 항목).
 
 ## 게이트 판정
-- 이번 단계 목표: PARTIAL (Host/Build PASS, Hardware는 UART 동작만 확인, 육안·5회 주기 미검증)
+- 이번 단계 목표: PARTIAL (Host/Build PASS, Hardware는 UART 동작과 극성 육안 확인까지, 잔상·5회 주기 미검증)
 - 다음 단계: 위 육안 확인을 하고, 결과에 따라 극성과 기본값을 결정한다. 잔상 100회 측정(U-03)도 남아 있다
