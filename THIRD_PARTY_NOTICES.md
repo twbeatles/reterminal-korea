@@ -14,7 +14,7 @@
 | 기상청 단기예보 API | https://www.data.go.kr/data/15084084/openapi.do | 공공데이터포털 이용조건 | 출처 표시 |
 | 에어코리아 API | https://www.data.go.kr/data/15073861/openapi.do | 이용조건(출처표시·변경금지) | 심의 준수 |
 | 수출입은행 환율 API | https://www.data.go.kr/data/3068846/openapi.do | 포털 이용조건 | 출처 표시 |
-| 금융위원회 시세 API (P5) | https://www.data.go.kr/data/15094808/openapi.do | 포털 이용조건 | 실시간 오인 금지 |
+| 금융위원회 시세 API (P5) | https://www.data.go.kr/data/15094808/openapi.do | 공공누리 제4유형(출처표시·상업적 이용금지·변경금지, 제3자 재배포 금지) | 소유자 본인 기기 표시만. 실시간 오인 금지 |
 | GxEPD2 (미사용) | https://github.com/ZinggJM/GxEPD2 | GPL-3.0 (LICENSE 원문 확인) | 펌웨어 미포함 — ADR 0004에 따라 자체 UC8179 우선 |
 | SY6974 PMIC (직접 I2C 판독) | 공식 SenseCraft_HMI `lib/SY6974`+`pmic_sy6974` (동작 참조만) | — | 라이브러리 미포함, REG0A/REG08 읽기만 구현. 설정 쓰기 없음 |
 | 공식 원문 보관 | `hardware/reference/` (MIT, Seeed-Projects, GxEPD2 제외) | 참조용, 펌웨어 미편입 |

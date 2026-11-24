@@ -31,6 +31,18 @@
 
 - GDEY075T7 드라이버: GxEPD2 master [`src/gdey/GxEPD2_750_GDEY075T7.h`](https://github.com/ZinggJM/GxEPD2/blob/master/src/gdey/GxEPD2_750_GDEY075T7.h) / [`.cpp`](https://github.com/ZinggJM/GxEPD2/blob/master/src/gdey/GxEPD2_750_GDEY075T7.cpp). 공식 E1001 예제(`GxEPD2_reTerminal_E1001.ino`)가 이 클래스를 쓴다. ADR 0018 당시 404였던 경로는 `src/gdey/` 아래에 있었다. 원문 값: `hasFastPartialUpdate=true`, `useFastPartialUpdateFromOTP=true`(초기 배치 패널은 false), `partial_refresh_time=450`, `full_refresh_time=1200`, `_Init_Part` OTP fast = 0xE0 02 / 0xE5 6E. N회 권장과 잔상 언급은 없다. 커밋 해시는 기록하지 못했다. GPL-3.0이라 레지스터 값만 참고했다. 결정: [ADR 0034](adr/0034-fast-differential-refresh.md).
 
+## 2026-11-24 외부 API 재대조 (확인일 2026-11-24, 실키 probe 없이 포털·호스트 대조만)
+
+- 대조 범위: data.go.kr 상세 5종(KMA 15084084, AirKorea 15073861, EXIM 3068846, FSC 15094808, 특일 15012690)의 수정일·operation·호스트와 KIS 개발자센터 공지·공개 샘플을 `src/net/Endpoints.*`·`host/kdash/endpoints.py`·`NetPolicy.h`와 대조했다. 실키 probe를 실행하지 않았으므로 U-05/06/08/09 게이트는 유지한다.
+- KMA: 수정일 2026-10-19 유지. `VilageFcstInfoService_2.0` + `getUltraSrtNcst`/`getVilageFcst`, 정시/30분 `base_time` 표기 동일. 변경 없음.
+- AirKorea: 수정일 2026-06-30 유지. `ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty` operation 동일. `ver=1.0`은 공개 예시(`ver=1.3`)와 다르나 2026-11-11 실키 응답(내부 코드 00)으로 검증된 현재값이므로 유지한다.
+- EXIM: 수정일 2026-04-30 유지. 구 도메인(`www.koreaexim.go.kr`) 종료 예정일(2026-04-30)이 경과해 구 도메인은 더 이상 유효하지 않다. 코드·테스트에 구 도메인 잔재가 없음(`www.koreaexim` 검색: 문서 언급·거부 테스트만)을 확인했다. `oapi.koreaexim.go.kr` 유지. 변경 없음.
+- FSC: 수정일 2026-10-28 유지. `GetStockSecuritiesInfoService_V2/getStockPriceInfo_V2` 유지. 이용허락 제4유형(출처표시·상업적 이용금지·변경금지, 제3자 재배포 금지) — 기기는 소유자 본인 기기 표시만 하므로 현행 준수. 변경 없음.
+- KIS: `openapi.koreainvestment.com:9443`, `inquire-price`(FHKST01010100)·`inquire-index-price`(FHPUP02100000)·`oauth2/tokenP` 현행 유지(2026년 공개 문서 다수에서 동일 확인). 개발자센터 공지 2건 확인: 2026-10-27 국내주식 재무분석 7종 종료(우리가 쓰는 시세 조회가 아니므로 영향 없음), 2026-10-29 API 결과값 제공사항 변경(상세는 로그인 필요, 미확인) — 다음 실키 probe(U-08) 때 사용 필드(`stck_prpr`·`bstp_nmix_prpr`·`rt_cd`·`msg_cd`) 재확인을 남긴다.
+- 특일: 수정일 2023-03-29 유지. `SpcdeInfoService/getRestDeInfo` 연간 조회 유지. 변경 없음.
+- 만료 예정 리마인드(코드 변경 없음): GlobalSign Root R3 만료 2029-03-18(ADR 0003 D8) — 만료 전 `python tools/gen_ca_bundle.py --verify`로 체인 재확인 후 교체. 24절기 상수표는 2028-12 종료 — 달력은 올해+내년까지만 필요하므로 2028년 중 2029 fixture 확보가 필요하다.
+- 결론: 이번 재대조에서 코드 변경이 필요한 API 변경점은 없다.
+
 ## 2026-11-12 LAN 설정 포털 설계 출처 (확인일 2026-11-12, 검색 요약 기준 — 원문 정독은 구현 시)
 
 - Arduino-ESP32 STA 모드 HTTP 서버: [Espressif Arduino Wi-Fi API](https://docs.espressif.com/projects/arduino-esp32/en/latest/api/wifi.html). `ESPmDNS` API 원문은 이번에 직접 열지 못했다 — 구현 전 설치된 코어 3.3.12 헤더로 확인.
